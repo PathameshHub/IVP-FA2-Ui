@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Media Compression</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <link rel="icon" type="image/png" href="favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Satellite Media Compression System</h1>
+                <p>Upload satellite images or videos and compress them using various techniques</p>
+            </div>
+            <div class="theme-toggle-container">
+                <label class="theme-toggle" for="theme-toggle">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </span>
+                </label>
+            </div>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <h2>Upload Media</h2>
+                <div class="media-type-tabs">
+                    <button class="media-tab-button active" data-media-type="image">Image</button>
+                    <button class="media-tab-button" data-media-type="video">Video</button>
+                </div>
+                <div class="upload-container" id="upload-container">
+                    <div class="upload-placeholder" id="upload-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <p>Drag & drop your file here<br>or click to browse</p>
+                        <span class="supported-formats" id="supported-formats">Supported formats: JPG, PNG, TIFF, GeoTIFF</span>
+                    </div>
+                    <div class="preview-container">
+                        <img id="preview-image" class="preview-media hidden" alt="Preview">
+                        <video id="preview-video" class="preview-media hidden" controls></video>
+                    </div>
+                    <input type="file" id="file-input" class="file-input">
+                </div>
+                <div class="file-info" id="file-info"></div>
+                <div class="error-message hidden" id="upload-error"></div>
+            </section>
+
+            <section class="compression-section">
+                <h2>Compression Settings</h2>
+                <form id="compression-form">
+                    <div class="form-group" id="method-selection-container">
+                        <label for="compression-method">Compression Method:</label>
+                        <select id="compression-method" name="method" required>
+                            <option value="huffman">Huffman Coding (Lossless)</option>
+                            <option value="svd">Singular Value Decomposition (SVD)</option>
+                            <option value="pca">Principal Component Analysis (PCA)</option>
+                        </select>
+                        <div class="method-description" id="method-description">
+                            Huffman coding is a lossless compression technique that assigns variable-length codes to input characters, with shorter codes for more frequent characters.
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="compression-level-container">
+                        <label for="compression-level">Compression Level: <span id="level-value">50</span>%</label>
+                        <input type="range" id="compression-level" name="level" min="10" max="90" value="50" step="5">
+                        <p class="help-text" id="level-help-text"></p>
+                    </div>
+
+                    <button type="submit" id="compress-button" class="primary-button" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span id="compress-button-text">Compress Media</span>
+                    </button>
+                </form>
+            </section>
+
+            <section class="results-section hidden" id="results-section">
+                <h2>Compression Results</h2>
+                
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="comparison">Media Comparison</button>
+                    <button class="tab-button" data-tab="metrics">Compression Metrics</button>
+                </div>
+
+                <div class="tab-content active" id="comparison-tab">
+                    <!-- Image comparison container -->
+                    <div id="image-comparison-container" class="comparison-container">
+                        <div class="image-comparison-container" id="image-comparison">
+                            <div class="comparison-original">
+                                <img id="original-image" alt="Original Image">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div class="comparison-compressed">
+                                <img id="compressed-image" alt="Compressed Image">
+                                <div class="image-label">Compressed</div>
+                            </div>
+                            <div class="comparison-slider" id="comparison-slider"></div>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="comparison-range" min="0" max="100" value="50">
+                            <div class="slider-labels">
+                                <span>Original</span>
+                                <span>Compressed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video comparison container -->
+                    <div id="video-comparison-container" class="comparison-container hidden">
+                        <div class="video-comparison">
+                            <div class="comparison-original">
+                                <video id="original-video" controls></video>
+                                <div class="video-label">Original</div>
+                            </div>
+                            <div class="comparison-compressed">
+                                <video id="compressed-video" controls></video>
+                                <div class="video-label">Compressed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="download-button" class="secondary-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span id="download-button-text">Download Compressed Media</span>
+                    </button>
+                </div>
+
+                <div class="tab-content" id="metrics-tab">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h3>Original Size</h3>
+                            <p id="original-size">-</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Compressed Size</h3>
+                            <p id="compressed-size">-</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Compression Ratio</h3>
+                            <p id="compression-ratio">-</p>
+                        </div>
+                        <div class="metric-card image-only-metric">
+                            <h3>Peak Signal-to-Noise Ratio (PSNR)</h3>
+                            <p id="psnr-value">-</p>
+                            <small>Higher values indicate better quality (typically 30-50 dB is good)</small>
+                        </div>
+                        <div class="metric-card image-only-metric">
+                            <h3>Mean Squared Error (MSE)</h3>
+                            <p id="mse-value">-</p>
+                            <small>Lower values indicate less difference from the original</small>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Processing Time</h3>
+                            <p id="processing-time">-</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="loading-overlay hidden" id="loading-overlay">
+                <div class="spinner"></div>
+                <p id="loading-message">Processing media...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Satellite Media Compression System &copy; 2025</p>
+        </footer>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
